@@ -1,4 +1,4 @@
-'use strict';
+
 // requiring dependencies
 const leaflet = require('leaflet');
 // Creating Workout Class
@@ -73,7 +73,16 @@ class App {
     #workouts = [];
 
     constructor() {
-        this.getPosition;
+        // Reset Application
+        this.reset();
+
+        // Get user's position
+        this.getPosition();
+
+        // Get data from local storage
+        this.getLocalStorage()
+
+        // Attaching event listeners
         form.addEventListener('submit', this.newWorkout.bind(this));
         inputType.addEventListener('change', this.toggleElevationField);
         containerWorkouts.addEventListener('click', this.moveToWorkout.bind(this))
@@ -99,6 +108,10 @@ class App {
         }).addTo(this.#map);
 
         this.#map.on('click', this.showForm.bind(this))
+
+        this.#workouts.forEach(work => {
+            this.renderWorkoutMarker(work);
+        });
     }
 
     showForm(mapE) {
@@ -251,7 +264,33 @@ class App {
                     duration: 1,
                 },
             })
-        }
-    }
 
-const app = new App()
+        }
+        
+        // Setting workouts in Local Storage
+        setLocalStorage() {
+            localStorage.setItem('workouts', JSON.stringify(this.#workouts))
+        }
+        
+        // Getting workouts from local storage
+        getLocalStorage() {
+                const data = JSON.parse(localStorage.getItem('workouts'));
+                console.log(data)
+
+                if(!data) return;
+
+                this.#workouts = data;
+                
+                this.#workouts.forEach(work => {
+                    this.renderWorkout(work);
+                })
+            }
+
+            reset() {
+                localStorage.removeItem('workouts');
+                location.reload();
+            }
+};
+    
+
+const app = new App();
