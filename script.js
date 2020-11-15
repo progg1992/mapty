@@ -1,9 +1,7 @@
 'use strict';
+// requiring dependencies
 const leaflet = require('leaflet');
-// prettier-ignore
-
-
-
+// Creating Workout Class
 class Workout {
     date = new Date();
     id = (new Date() + '').slice(-10)
@@ -25,6 +23,7 @@ class Workout {
     }
 }
 
+// Creating Running Class
 class Running extends Workout {
     type = 'running';
 
@@ -40,7 +39,7 @@ class Running extends Workout {
         return this.pace
     }
 }
-
+// Created Cycling Class
 class Cycling extends Workout {
     type = 'cycling';
 
@@ -58,7 +57,6 @@ class Cycling extends Workout {
 }
 ///////////////////////////////////////////////////
 // APPLICATION ARCHITECTURE
-
 const form = document.querySelector('.form');
 const containerWorkouts = document.querySelector('.workouts');
 const inputType = document.querySelector('.form__input--type');
@@ -67,15 +65,18 @@ const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 
+// Creating App Class
 class App {
     #map;
+    #mapZoom = 13;
     #mapEvent;
     #workouts = [];
 
     constructor() {
         this.getPosition;
         form.addEventListener('submit', this.newWorkout.bind(this));
-        inputType.addEventListener('change', this.toggleElevationField)
+        inputType.addEventListener('change', this.toggleElevationField);
+        containerWorkouts.addEventListener('click', this.moveToWorkout.bind(this))
     }
 
     getPosition() {
@@ -91,7 +92,7 @@ class App {
         const {longitude} = position.coords
         const coords = [latitude, longitude]
             
-        this.#map = L.map('map').setView(coords, 13);
+        this.#map = L.map('map').setView(coords, this.mapZoom);
             
         L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -110,7 +111,7 @@ class App {
         // Empty inputs
         inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value =
         '';
-        
+        // Hide the Form
         form.getElementsByClassName.display = 'none';
         form.classList.add('hidden');
         setTimeout(() => (form.style.display = 'grid', 1000))
@@ -149,7 +150,7 @@ class App {
         // IF workout is cycling, create cycling object
         if(type === 'cycling') {
             const elevation = + inputElevation.value;
-
+            // Check if data is valid
             if(!validInputs(distance, duration, cadence) ||
                !allPositive(distance, duration)
             )
@@ -169,7 +170,7 @@ class App {
         // Hide form + clear input fields
         this.hideForm();
     }
-    
+    // Creates Workout Marker on the map using Leaflet
     renderWorkoutMarker(workout) {
         L.marker(workout.coords)
             .addTo(this.#map)
@@ -185,7 +186,7 @@ class App {
             )
             .openPopup();
     }
-
+    // Adds workout to the UI
     renderWorkout(workout) {
         let html = `
         <li class="workout workout--${workout.type}" data-id="${workout.id}">
@@ -202,7 +203,7 @@ class App {
                 <span class="workout__unit">min</span>
             </div>
         `;
-
+        // Checking that workout is running
         if(workout.type === 'running')
          html += `
             <div class="workout__details">
@@ -217,7 +218,7 @@ class App {
             </div>
         </li>
         `;
-
+        // Checking that workout is cycling
         if(workout.type === 'cycling')
          html += `
             <div class="workout__details">
@@ -232,9 +233,25 @@ class App {
             </div>
         </li>
          `;
-
+        // Appending Workout to the Form Element
          form.insertAdjacentHTML('afterend', html);
+        }
+        // Focuses map on the clicked workout
+        moveToWorkout(e) {
+            const workoutEl = e.target.closest('.workout')
+
+            if(!workoutEl) return;
+
+            const workout = this.#workouts.find(work => work.id === workoutEl.dataset.id
+            );
+
+            this.#map.setView(workout.coords, this.#mapZoom, {
+                animate : true,
+                pan: {
+                    duration: 1,
+                },
+            })
+        }
     }
-}
 
 const app = new App()
