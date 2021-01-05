@@ -1,7 +1,7 @@
 # Mapty
 
 ## Description 
-Website dedicated to to tracking workouts.
+Website dedicated to tracking workouts.
 
 ## User Story
 * As a cycling and running enthusist. I want an app where I can keep track of my workouts.
