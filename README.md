@@ -11,8 +11,9 @@ Website dedicated to tracking workouts.
 
 ## Technology used
 * Font Awesome: https://fontawesome.com/
-       
-## Image
+* Leaflet
+*ES6
+*HTML
 
 
 ## Links
