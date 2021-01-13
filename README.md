@@ -12,10 +12,9 @@ Website dedicated to tracking workouts.
 ## Technology used
 * Font Awesome: https://fontawesome.com/
 * Leaflet
-*ES6
-*HTML
+* ES6
+* HTML
 
 
 ## Links
 * GitHub Repository: https://github.com/progg1992/mapty.git
-* GitHub Pages: 
